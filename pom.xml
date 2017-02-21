@@ -32,13 +32,6 @@ return sharedCentralManager;
 }
 
 
-+ (MWCentralManager *)sharedService {
-if (sharedCentralManager == nil) {
-NSLog(@"ERROR: must call initSharedServiceWithDelegate: first.");
-}
-return sharedCentralManager;
-}
-
 - (void)handleFoundPeripheral:(CBPeripheral *)peripheral {
 YMSCBPeripheral *yp = [self findPeripheral:peripheral];
 
