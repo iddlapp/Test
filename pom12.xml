@@ -40,11 +40,6 @@ self.peripheralStatusIcon.image = [UIImage imageNamed:@"iconStatusPairing"];
 }
 }
 
-- (void)configureWithPeripheral:(YMSCBPeripheral *)yp {
-self.yperipheral = yp;
-[self updateDisplay];
-}
-
 
 - (void)updateDisplay {
 NSString *buttonLabel;
