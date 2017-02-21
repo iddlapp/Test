@@ -39,45 +39,6 @@ NSLog(@"ERROR: must call initSharedServiceWithDelegate: first.");
 return sharedCentralManager;
 }
 
-
-- (void)startScan {
-/*
-Setting CBCentralManagerScanOptionAllowDuplicatesKey to YES will allow for repeated updates of the RSSI via advertising.
-*/
-
-NSDictionary *options = @{ CBCentralManagerScanOptionAllowDuplicatesKey: @YES };
-// NOTE: TI SensorTag firmware does not included services in advertisementData.
-// This prevents usage of serviceUUIDs array to filter on.
-
-/*
-Note that in this implementation, handleFoundPeripheral: is implemented so that it can be used via block callback or as a
-delagate handler method. This is an implementation specific decision to handle discovered and retrieved peripherals identically.
-
-This may not always be the case, where for example information from advertisementData and the RSSI are to be factored in.
-*/
-
-#ifdef CALLBACK_EXAMPLE
-__weak MWCentralManager *this = self;
-[self scanForPeripheralsWithServices:nil
-options:options
-withBlock:^(CBPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI, NSError *error) {
-if (error) {
-NSLog(@"Something bad happened with scanForPeripheralWithServices:options:withBlock:");
-return;
-}
-YMSCBPeripheral *yp = [self findPeripheral:peripheral];
-if (nil == yp) {
-NSLog(@"DISCOVERED: %@, %@, %@, %@ db", peripheral, peripheral.name,advertisementData, RSSI);
-}
-[this handleFoundPeripheral:peripheral];
-}];
-
-#else
-[self scanForPeripheralsWithServices:nil options:options];
-#endif
-
-}
-
 - (void)handleFoundPeripheral:(CBPeripheral *)peripheral {
 YMSCBPeripheral *yp = [self findPeripheral:peripheral];
 
