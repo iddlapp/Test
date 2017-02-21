@@ -1,36 +1,94 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.example</groupId>
-  <artifactId>wordcount</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>wordcount</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <repositories>
-    <repository>
-      <id>apache</id>
-      <url>https://repository.apache.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
-</project>
+//
+//  MWPeripheralTableViewCell.m
+//  ELDManager
+//
+//  Created by Ram Singh on 16/12/16.
+//  Copyright © 2016 Faberwork. All rights reserved.
+//
+
+#import "MWPeripheralTableViewCell.h"
+#import "YMSCBPeripheral.h"
+#import "MWELDTag.h"
+#import "MWCentralManager.h"
+#import "MWTheme.h"
+
+@implementation MWPeripheralTableViewCell
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+if (self) {
+// Initialization code
+}
+return self;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+[super setSelected:selected animated:animated];
+
+// Configure the view for the selected state
+}
+
+- (IBAction)connectButtonAction:(id)sender {
+
+if (self.yperipheral.isConnected) {
+[self.connectButton setTitle:@"CANCELLING…" forState:UIControlStateNormal];
+self.peripheralStatusLabel.text = @"QUIESCENT";
+[self.peripheralStatusLabel setTextColor:[[MWTheme sharedTheme] bodyTextColor]];
+self.peripheralStatusIcon.image = [UIImage imageNamed:@"iconStatusAdvertising"];
+self.rssiLabel.text = @"—";
+[self.yperipheral disconnect];
+} else {
+[self.connectButton setTitle:@"PAIRING…" forState:UIControlStateNormal];
+self.peripheralStatusLabel.text = @"PAIRING…";
+[self.peripheralStatusLabel setTextColor:[[MWTheme sharedTheme] pairingColor]];
+self.peripheralStatusIcon.image = [UIImage imageNamed:@"iconStatusPairing"];
+[self.yperipheral connect];
+}
+}
+
+- (void)configureWithPeripheral:(YMSCBPeripheral *)yp {
+self.yperipheral = yp;
+[self updateDisplay];
+}
+
+
+- (void)updateDisplay {
+NSString *buttonLabel;
+
+if (self.yperipheral.name) {
+self.nameLabel.text = self.yperipheral.name;
+} else {
+self.nameLabel.text = @"Undisclosed Name";
+}
+
+
+if ([self.yperipheral isKindOfClass:[MWELDTag class]]) {
+self.peripheralIcon.image = [UIImage imageNamed:@"iconGenericBLE"];
+
+if (self.yperipheral.isConnected) {
+buttonLabel = @"DISCONNECT";
+self.peripheralStatusLabel.text = @"CONNECTED";
+[self.peripheralStatusLabel setTextColor:[[MWTheme sharedTheme] connectedColor]];
+self.peripheralStatusIcon.image = [UIImage imageNamed:@"iconStatusConnected"];
+self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+[self.connectButton setTitle:buttonLabel forState:UIControlStateNormal];
+self.connectButton.titleLabel.text = buttonLabel;
+
+} else {
+buttonLabel = @"CONNECT";
+self.peripheralStatusLabel.text = @"QUIESCENT";
+[self.peripheralStatusLabel setTextColor:[[MWTheme sharedTheme] bodyTextColor]];
+self.peripheralStatusIcon.image = [UIImage imageNamed:@"iconStatusAdvertising"];
+self.accessoryType = UITableViewCellAccessoryNone;
+[self.connectButton setTitle:buttonLabel forState:UIControlStateNormal];
+//self.rssiLabel.text = @"—";
+}
+
+} else {
+self.peripheralIcon.image = [UIImage imageNamed:@"iconGenericBLE"];
+self.connectButton.hidden = NO;
+self.accessoryType = UITableViewCellAccessoryNone;
+}
+}
+
+@end
